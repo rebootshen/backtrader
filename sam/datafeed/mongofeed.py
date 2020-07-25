@@ -49,7 +49,7 @@ class MongoData(bt.feed.DataBase):
             db = client[self.db]
             collection = db[self.p.dataname]
             log.info("date from  {} to {}".format(self.p.fromdate,self.p.todate))
-            self.data = list(collection.find({'date':{'$gte':self.p.fromdate,'$lte':self.p.todate}}))#
+            self.data = list(collection.find({'date':{'$gte':self.p.fromdate,'$lte':self.p.todate}}).sort([('_id',-1)]))#.sort([("number", 1), ("date", -1)])
             log.info("load {} rows for {}".format(len(self.data), self.symbol))
             client.close()
 

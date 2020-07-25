@@ -53,16 +53,18 @@ def get_stock_daily(start_date, end_date):
     ts.set_token("1f5fcc75bfa0d0ddb8e3d7caab4c9623185529a5052e7671f3e9c7e2") #XXX为自己的token
     pro = ts.pro_api()
     log.info("connected tushare for data")
-    #stock_list = open('./codes.csv', 'r', encoding='utf-8').readlines()
 
     #所有股票代码等
-    stock_list = pro.stock_basic(exchange='', list_status='L', fields='ts_code')
+    stock_list = open('./codes.csv', 'r', encoding='utf-8').readlines()
+
+    #stock_list = pro.stock_basic(exchange='', list_status='L', fields='ts_code')
     #,symbol,name,area,industry,list_date')
     #print(stock_list)
     sleep_time=0.4
     # 遍历所有股票ID
-    for code in stock_list.ts_code:
-        #code = code.strip('\n')
+    #for code in stock_list.ts_code:
+    for code in stock_list:
+        code = code.strip('\n')
         print(code)
         t0 = time.time()
         # 请求tushare数据，并转化为json格式
@@ -105,11 +107,11 @@ def get_stock_daily(start_date, end_date):
         if np.size(df,0)<60:
             time.sleep(sleep_time)
             continue
-        exit(0)
+        #exit(0)
 
 if __name__ == '__main__':
     start_date = '2010-01-01'
-    end_date = '2020-07-01'
+    end_date = '2020-07-25'
     get_stock_daily(start_date, end_date)
     # date_str="20100101"
     # print(pd.to_datetime(date_str, format="%Y%m%d"))
