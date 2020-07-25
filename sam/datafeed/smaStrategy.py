@@ -100,6 +100,6 @@ if __name__ == "__main__":
         log.info("transactions")
 
     # 运行结果绘图
-    cerebro.plot()
-    #b = Bokeh(style="bar", tabs="multi", scheme=Tradimo())
-    #cerebro.plot(b)
+    #cerebro.plot()
+    b = Bokeh(style="bar", tabs="multi", scheme=Tradimo())
+    cerebro.plot(b)
