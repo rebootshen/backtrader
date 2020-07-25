@@ -4,6 +4,15 @@ from mongofeed import MongoData
 import logging
 logging.basicConfig(filename='example.log',level=logging.DEBUG)
 log = logging.getLogger(__name__)
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create formatter
+formatter = logging.Formatter("%(asctime)s;%(levelname)s;%(message)s")
+# add formatter to ch
+ch.setFormatter(formatter)
+# add ch to logger
+log.addHandler(ch)
 
 class SMACross(bt.Strategy):
     params = dict(
@@ -40,11 +49,16 @@ if __name__ == "__main__":
         # 本地postgresql数据库
         # db_uri="postgresql://user:password@localhost:5432/dbname",
     data = MongoData( 
-        db="stock",
-        dataname="0000001.SZ",
-        fromdate=datetime.datetime(2016, 1, 1),
-        todate=datetime.datetime(2020,1,1)
+        db="tushare_storage",
+        dataname="000001.SZ",
+        fromdate=datetime.datetime(2010, 1, 1),
+        todate=datetime.datetime(2020, 7, 1)
     )
+
+    log.info("data:".format(len(data)))
+    #if len(data) == 0:
+    #    exit(0)
+
     cerebro.adddata(data)
 
     cerebro.addstrategy(SMACross)
