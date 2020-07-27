@@ -5,8 +5,10 @@ import json
 import time
 import pandas as pd
 import numpy as np
+from file_dir import log_file
 import logging
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
+
+logging.basicConfig(filename=log_file,level=logging.DEBUG)
 log = logging.getLogger(__name__)
 # create console handler and set level to debug
 ch = logging.StreamHandler()

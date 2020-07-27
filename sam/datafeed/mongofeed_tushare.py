@@ -3,8 +3,8 @@ from backtrader import date2num
 import pymongo
 import datetime
 from file_dir import log_file
-
 import logging
+
 logging.basicConfig(filename=log_file,level=logging.DEBUG)
 log = logging.getLogger(__name__)
 # create console handler and set level to debug
@@ -51,7 +51,7 @@ class MongoData(bt.feed.DataBase):
             db = client[self.db]
             collection = db[self.p.dataname]
             log.info("date from  {} to {}".format(self.p.fromdate,self.p.todate))
-            self.data = list(collection.find({'date':{'$gte':self.p.fromdate,'$lte':self.p.todate}}).sort([('date',1)]))#.sort([("number", 1), ("date", -1)])
+            self.data = list(collection.find({'date':{'$gte':self.p.fromdate,'$lte':self.p.todate}}).sort([('_id',-1)]))#.sort([("number", 1), ("date", -1)])
             log.info("load {} rows for {}".format(len(self.data), self.symbol))
             client.close()
 
@@ -74,15 +74,22 @@ class MongoData(bt.feed.DataBase):
             return False
 
         # fill the lines
+        #log.info(row['trade_date'])
         #log.info(row['date'])
-        self.lines.datetime[0] = date2num(row['date'])
+        # Format is YYYYMMDD
+        y = int(row['trade_date'][0:4])
+        m = int(row['trade_date'][4:6])
+        d = int(row['trade_date'][6:8])
+        dt = datetime.datetime(y, m, d)
+        #log.info(dt)
+        self.lines.datetime[0] = date2num(dt)
         #log.info(self.lines.datetime[0])
         #self.date2num(datetime.strptime(row['trade_date'], '%d/%m/%y'))
         self.lines.open[0] = row['open']
         self.lines.high[0] = row['high']
         self.lines.low[0] = row['low']
         self.lines.close[0] = row['close']
-        self.lines.volume[0] = row['volume']
+        self.lines.volume[0] = row['vol']
         self.lines.openinterest[0] = 0
 
         return True
