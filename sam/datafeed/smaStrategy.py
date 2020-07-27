@@ -182,7 +182,8 @@ if __name__ == "__main__":
     #cerebro.addsizer(bt.sizers.AllInSizerInt)
 
     #cerebro.addsizer(bt.sizers.SizerFix, stake=10000)
-    cerebro.addsizer(bt.sizers.PercentSizerInt, percents = 90)
+    #cerebro.addsizer(bt.sizers.PercentSizerInt, percents = 90)
+    cerebro.addsizer(bt.sizers.AllInSizer, percents=90)
 
     cerebro.broker.set_cash(1000000)
     # Set the commission - 0.1% ... divide by 100 to remove the %

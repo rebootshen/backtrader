@@ -31,6 +31,7 @@ class SMACross(bt.Strategy):
     params = dict(
         pfast=10,  # period for lower/fast SMA
         pslow=30,  # period for higher/slow SMA
+        rsiperiod=21,
     )
     params['tr_strategy'] = None
 
@@ -42,6 +43,8 @@ class SMACross(bt.Strategy):
         # 均线交叉, 1是上穿，-1是下穿
         self.crossover = bt.ind.CrossOver(self.sma1, self.sma2)  # crossover signal
         self.tr_strategy = self.params.tr_strategy
+
+        self.rsi = bt.indicators.RSI_SMA(self.data.close, period=self.params.rsiperiod)
 
 
     def next(self, strategy_type=""):
@@ -72,18 +75,25 @@ class SMACross(bt.Strategy):
                         self.order = self.buy()
 
         if (tr_str == "simple2"):
-            
             if not self.position: # not in the market
                 if (self.dataclose[0] - self.dataclose[-1]) < -0.05*self.dataclose[0] or (self.dataclose[0] - self.dataclose[-2]) < -0.05*self.dataclose[0] or (self.dataclose[0] - self.dataclose[-3]) < -0.05*self.dataclose[0] or (self.dataclose[0] - self.dataclose[-4]) < -0.05*self.dataclose[0]:
                     self.log('BUY CREATE {0:8.2f}'.format(self.dataclose[0]))
-                    self.order = self.buy()     
+                    self.order = self.buy()  
 
-        if tr_str == "BB":
+        if (tr_str == "BB"):
             #if self.data.close > self.boll.lines.top:
             #self.sell(exectype=bt.Order.Stop, price=self.boll.lines.top[0], size=self.p.size)
             if self.data.close < self.boll.lines.bot:
                 self.log('BUY CREATE {0:8.2f}'.format(self.dataclose[0]))
                 self.order = self.buy()     
+
+        if (tr_str == "rsi"):  
+            if not self.position:
+                if self.rsi < 30:
+                    self.buy(size=100)
+            else:
+                if self.rsi > 70:
+                    self.sell(size=100)
 
         #print('Current Portfolio Value: %.2f' % cerebro.broker.getvalue())            
 
@@ -101,8 +111,8 @@ class SMACross(bt.Strategy):
 
 
 if __name__ == "__main__":
-    strategy_final_values=[0,0,0,0]
-    strategies = ["cross", "simple1", "simple2", "BB"]
+    strategy_final_values=[0,0,0,0,0]
+    strategies = ["cross", "simple1", "simple2", "BB", "rsi"]
     
     
     for tr_strategy in strategies: 
@@ -161,7 +171,7 @@ if __name__ == "__main__":
         #cerebro.plot(b)
         ind=strategies.index(tr_strategy)
 
-        figure=cerebro.plot(iplot=False)[0][0]  
+        figure=cerebro.plot(style='candlestick',iplot=False)[0][0]  
         figure.savefig(tmp_dir + 'example_' + tr_strategy + '.png')
         
         # Print out the final result
